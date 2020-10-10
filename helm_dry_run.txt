@@ -1,5 +1,5 @@
 NAME: airflow
-LAST DEPLOYED: Sat Oct 10 18:01:14 2020
+LAST DEPLOYED: Sat Oct 10 18:46:08 2020
 NAMESPACE: airflow
 STATUS: pending-install
 REVISION: 1
@@ -42,7 +42,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  fernet-key: "UjJoRWJIa3dZVFZ2Ylhkek1HcEVabFZrYW5vM2MybG9NSHB5Ym01U1VrYz0="
+  fernet-key: "TjB4c1RUZE5iVlpJUTJnd09YUnNUVE0yTVVoSlpWTkpZVW8zTmxWd1pYRT0="
 ---
 # Source: airflow/templates/secrets/redis-secrets.yaml
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -81,7 +81,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  password: "WVc3MGNBVDkzVQ=="
+  password: "bXNONUU4M2xTNw=="
 ---
 # Source: airflow/templates/secrets/redis-secrets.yaml
 ################################
@@ -101,7 +101,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  connection: "cmVkaXM6Ly86WVc3MGNBVDkzVUBhaXJmbG93LXJlZGlzOjYzNzkvMA=="
+  connection: "cmVkaXM6Ly86bXNONUU4M2xTN0BhaXJmbG93LXJlZGlzOjYzNzkvMA=="
 ---
 # Source: airflow/templates/create-user-job.yaml
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -525,6 +525,10 @@ data:
           volumeMounts:
             - mountPath: "/opt/airflow/logs"
               name: airflow-logs
+            - mountPath: /opt/airflow/dags
+              name: airflow-dags
+              readOnly: true
+              subPath: repo/tests/dags
       hostNetwork: false
       restartPolicy: Never
       securityContext:
@@ -537,6 +541,9 @@ data:
                 []
       serviceAccountName: 'airflow-worker'
       volumes:
+      - name: dags
+        persistentVolumeClaim:
+          claimName: airflow-dag-pvc
       - emptyDir: {}
         name: airflow-logs
       - configMap:
@@ -835,7 +842,7 @@ spec:
         checksum/metadata-secret: d097e68f654f840acae78fe42459dd78ee8ef7c117b20457d49ca8bff730e1d7
         checksum/result-backend-secret: af25d110685219c9219e6a4f9b268566118a4b732de33192387a111d1f241c89
         checksum/pgbouncer-config-secret: da52bd1edfe820f0ddfacdebb20a4cc6407d296ee45bcb500a6407e2261a5ba2
-        checksum/airflow-config: 7719437d8c8a7c40783bab1a6e8cb554205329db142b83f7c11f684ffeeb1d23
+        checksum/airflow-config: d29acae544bb74b9a83ebf2f028ba171dde5a29ddbacee11c9647628683a2bc2
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
     spec:
       nodeSelector:
@@ -936,6 +943,8 @@ spec:
               mountPath: "/opt/airflow/airflow.cfg"
               subPath: airflow.cfg
               readOnly: true
+            - name: dags
+              mountPath: /opt/airflow/dags
         # Always start the garbage collector sidecar.
         - name: scheduler-gc
           image: apache/airflow:1.10.12
@@ -948,6 +957,9 @@ spec:
         - name: config
           configMap:
             name: airflow-airflow-config
+        - name: dags
+          persistentVolumeClaim:
+            claimName: airflow-dag-pvc
         - name: logs
           emptyDir: {}
 ---
@@ -1083,7 +1095,7 @@ spec:
       annotations:
         checksum/metadata-secret: d097e68f654f840acae78fe42459dd78ee8ef7c117b20457d49ca8bff730e1d7
         checksum/pgbouncer-config-secret: da52bd1edfe820f0ddfacdebb20a4cc6407d296ee45bcb500a6407e2261a5ba2
-        checksum/airflow-config: 7719437d8c8a7c40783bab1a6e8cb554205329db142b83f7c11f684ffeeb1d23
+        checksum/airflow-config: d29acae544bb74b9a83ebf2f028ba171dde5a29ddbacee11c9647628683a2bc2
     spec:
       serviceAccountName: airflow-webserver
       nodeSelector:
@@ -1171,6 +1183,8 @@ spec:
               mountPath: "/opt/airflow/airflow.cfg"
               subPath: airflow.cfg
               readOnly: true
+            - name: dags
+              mountPath: /opt/airflow/dags
           ports:
             - name: webserver-ui
               containerPort: 8080
@@ -1214,6 +1228,9 @@ spec:
         - name: config
           configMap:
             name: airflow-airflow-config
+        - name: dags
+          persistentVolumeClaim:
+            claimName: airflow-dag-pvc
 ---
 # Source: airflow/charts/postgresql/templates/statefulset.yaml
 apiVersion: apps/v1
@@ -2074,7 +2091,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  fernet-key: "UjJoRWJIa3dZVFZ2Ylhkek1HcEVabFZrYW5vM2MybG9NSHB5Ym01U1VrYz0="
+  fernet-key: "TjB4c1RUZE5iVlpJUTJnd09YUnNUVE0yTVVoSlpWTkpZVW8zTmxWd1pYRT0="
 ---
 # Source: airflow/templates/secrets/redis-secrets.yaml
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -2113,7 +2130,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  password: "WVc3MGNBVDkzVQ=="
+  password: "bXNONUU4M2xTNw=="
 ---
 # Source: airflow/templates/secrets/redis-secrets.yaml
 ################################
@@ -2133,7 +2150,7 @@ metadata:
     "helm.sh/hook-weight": "0"
 type: Opaque
 data:
-  connection: "cmVkaXM6Ly86WVc3MGNBVDkzVUBhaXJmbG93LXJlZGlzOjYzNzkvMA=="
+  connection: "cmVkaXM6Ly86bXNONUU4M2xTN0BhaXJmbG93LXJlZGlzOjYzNzkvMA=="
 ---
 # Source: airflow/templates/create-user-job.yaml
 # Licensed to the Apache Software Foundation (ASF) under one

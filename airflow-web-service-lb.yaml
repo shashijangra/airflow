@@ -1,0 +1,22 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: airflow-webserver-lb
+  labels:
+    tier: airflow
+    component: webserver
+    release: airflow
+    chart: "airflow-1.0.0"
+    heritage: Helm
+  annotations:
+spec:
+  type: LoadBalancer
+  selector:
+    tier: airflow
+    component: webserver
+    release: airflow
+  ports:
+    - name: airflow-ui
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   labels:
-    component: "airflow"
+    component: "airflow-log"
   name: airflow-log-pv
   namespace: airflow
 spec:
@@ -32,7 +32,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      component: "airflow-log-pv"
+      component: "airflow-log"
   accessModes:
     - ReadWriteMany
   storageClassName: azurefile

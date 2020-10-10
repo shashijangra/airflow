@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   labels:
-    component: "airflow"
+    component: "airflow-stor"
   name: airflow-stor-pv
   namespace: airflow
 spec:
@@ -32,7 +32,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      component: "airflow-stor-pv"
+      component: "airflow-stor"
   accessModes:
     - ReadWriteMany
   storageClassName: azurefile
